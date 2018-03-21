@@ -20,7 +20,6 @@ public class BookStore {
     var totalBookPrice: Double = 0
     
     var authors: [String] = []
-    
     // MARK: Function interfacesc
 
     public func setDataSource(bookGetter: ((Int) -> Book?)) {
@@ -29,7 +28,17 @@ public class BookStore {
         var authors: [String] = []
         
         // Get book from bookGetter
+        var index: Int = 0
+        while let book = bookGetter(index) {
+            books.append(book)
+            totalBookPrice += book.price
+            authors.append(book.author)
+            index += 1
+            print(index)
+        }
         
+        print(authors)
+        print(totalBookPrice)
         // Sort books
         
         // Retrieive authors and prices
