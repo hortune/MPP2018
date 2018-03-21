@@ -15,19 +15,26 @@
  */
 import Foundation
 
+
+enum CustomError: Error{
+    case BadURL
+    case BadDataFormat
+}
+
 // Throw errors if invalid URL and bookData
 func getBookData(urlText: String) throws -> [[String: String]]{
-    guard let url = URL.init(string: urlText) else { return [] }
+    guard let url = URL.init(string: urlText) else { throw CustomError.BadURL }
+    
     let data = try Data.init(contentsOf: url)
+    
     let jsonData = try JSONSerialization.jsonObject(with: data, options: [])
-    guard let bookData: [[String : String]] = jsonData as? [[String : String]] else { return [] }
+    guard let bookData: [[String : String]] = jsonData as? [[String : String]] else { throw CustomError.BadDataFormat }
     return bookData
 }
 
 do {
     
     let books: [[String: String]] = try getBookData(urlText: "http://bit.do/eaaqu")
-    
     /*:
      
      And, let's show the book store shopping cart:
