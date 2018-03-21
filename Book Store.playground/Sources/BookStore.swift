@@ -32,17 +32,14 @@ public class BookStore {
         while let book = bookGetter(index) {
             books.append(book)
             totalBookPrice += book.price
-            authors.append(book.author)
+            if !authors.contains(book.author){
+                authors.append(book.author)
+            }
             index += 1
-            print(index)
         }
         
-        print(authors)
-        print(totalBookPrice)
-        // Sort books
-        
-        // Retrieive authors and prices
-    
+        authors = self.sortAuthors(authors)
+        books = self.sortBooks(books)
         //assign value to property
         self.books = books
         self.totalBookPrice = totalBookPrice
