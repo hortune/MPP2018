@@ -39,7 +39,7 @@ public class BookStore {
         }
         
         authors = self.sortAuthors(authors)
-        books = self.sortBooks(books)
+        books = books.sorted()
         //assign value to property
         self.books = books
         self.totalBookPrice = totalBookPrice
