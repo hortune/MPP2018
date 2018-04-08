@@ -34,15 +34,19 @@ func getBookData(urlText: String) throws -> [[String: String]]{
 
 do {
     
-    let books: [[String: String]] = try getBookData(urlText: "http://bit.do/eaaqu")
+    do {
+        let books: [[String: String]] = try getBookData(urlText: "http://bit.do/eaaqu")
+        let bookStore = BookStore.from(books)
+        bookStore.showInPlayground()
+    }
+    catch{
+        print("some error happend")
+    }
     /*:
      
      And, let's show the book store shopping cart:
      
      */
-
-    let bookStore = BookStore.from(books)
-    bookStore.showInPlayground()
 }
 // Do error handling for invalid URL and bookData
 
