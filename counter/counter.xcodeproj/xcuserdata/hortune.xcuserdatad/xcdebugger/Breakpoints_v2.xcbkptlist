@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "counter/ElipseView.swift"
+            timestampString = "545107554.934559"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "11"
+            endingLineNumber = "11"
+            landmarkName = "ElipseView"
+            landmarkType = "3">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "counter.ElipseView.__deallocating_deinit"
+                  moduleName = "counter"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/hortune/Documents/MPP2018/counter/counter/ElipseView.swift"
+                  timestampString = "545107559.0762269"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "4">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "counter.ElipseView.init (frame : __C.CGRect) -&gt; counter.ElipseView"
+                  moduleName = "counter"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/hortune/Documents/MPP2018/counter/counter/ElipseView.swift"
+                  timestampString = "545107559.081718"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "11"
+                  endingLineNumber = "11"
+                  offsetFromSymbolStart = "210">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "counter.ElipseView.__allocating_init (frame : __C.CGRect) -&gt; counter.ElipseView"
+                  moduleName = "counter"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/hortune/Documents/MPP2018/counter/counter/ElipseView.swift"
+                  timestampString = "545107559.0840451"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "27">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "counter.ElipseView.__allocating_init (coder : __ObjC.NSCoder) -&gt; Swift.Optional&lt;counter.ElipseView&gt;"
+                  moduleName = "counter"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/hortune/Documents/MPP2018/counter/counter/ElipseView.swift"
+                  timestampString = "545107559.086363"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "4">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "counter.ElipseView.init (coder : __ObjC.NSCoder) -&gt; Swift.Optional&lt;counter.ElipseView&gt;"
+                  moduleName = "counter"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/hortune/Documents/MPP2018/counter/counter/ElipseView.swift"
+                  timestampString = "545107559.0895211"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "11"
+                  endingLineNumber = "11"
+                  offsetFromSymbolStart = "105">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>
