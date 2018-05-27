@@ -38,7 +38,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         sceneView.scene = SCNScene()
         
-        sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
+        sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints,ARSCNDebugOptions.showWorldOrigin]
     }
     
     func loadNodeObject(){
@@ -71,25 +71,18 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         ball?.scale = SCNVector3(0.001,0.001,0.001)
         ball?.physicsBody?.type = .kinematic
         ball?.position = SCNVector3(0,-0.03,-0.15)
+        
+        sceneView.pointOfView?.addChildNode(ball!)
     }
     
-//    func physicsWorld(_ world: SCNPhysicsWorld, didEnd contact: SCNPhysicsContact) {
-//        if (contact.nodeA.name == "Net" || contact.nodeB.name == "Net") && !isFalling {
-//            isFalling = true
-//            score += 1
-//            DispatchQueue.main.async {
-//                self.title = "\(self.score)"
-//            }
-//
-//        }
-//    }
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         // Create a session configuration
         let configuration = ARWorldTrackingConfiguration()
-        configuration.planeDetection = [.vertical,.horizontal] //.horizontal
+        configuration.planeDetection = [.vertical] //.horizontal
         // Run the view's session
         sceneView.session.run(configuration)
     }
@@ -145,17 +138,21 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         guard let planeAnchor = anchor as? ARPlaneAnchor else {
             return
         }
-        let planeNode = SCNNode()
-        let plane = SCNPlane(width: CGFloat(planeAnchor.extent.x), height: CGFloat(planeAnchor.extent.z))
-        plane.firstMaterial?.diffuse.contents = UIColor.white.withAlphaComponent(0.5)
-        plane.firstMaterial?.lightingModel = .constant
-        planeNode.geometry = plane
-        print("Anchor",planeAnchor.transform.columns.3)
-        planeNode.position = SCNVector3Make(planeAnchor.transform.columns.3.x, planeAnchor.transform.columns.3.y, planeAnchor.transform.columns.3.z);
-        planeNode.transform = SCNMatrix4MakeRotation(-Float.pi / 2.0, 1.0, 0.0, 0.0);
-        hoop?.position = planeNode.position
-        print("planeLoc",planeNode.position)
-        node.addChildNode(planeNode)
+        if !changed {
+            changed = true
+            let planeNode = SCNNode()
+            let plane = SCNPlane(width: CGFloat(planeAnchor.extent.x), height: CGFloat(planeAnchor.extent.z))
+            plane.firstMaterial?.diffuse.contents = UIColor.white.withAlphaComponent(0.5)
+            plane.firstMaterial?.lightingModel = .constant
+            planeNode.geometry = plane
+            print("Anchor",planeAnchor.transform.columns.3)
+            planeNode.position = SCNVector3Make(planeAnchor.transform.columns.3.x, planeAnchor.transform.columns.3.y, planeAnchor.transform.columns.3.z);
+            planeNode.transform = SCNMatrix4MakeRotation(-Float.pi / 2.0, 1.0, 0.0, 0.0);
+            hoop?.position = planeNode.position
+            print("planeLoc",planeNode.position)
+            node.addChildNode(planeNode)
+            sceneView.scene.rootNode.addChildNode(hoop!)
+        }
     }
 
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
@@ -171,11 +168,21 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             // 因為plane的父節點是anchor
             // 而hoop的父節點是real world
             plane.position = SCNVector3(arPlaneAnchor.center.x, arPlaneAnchor.center.y, arPlaneAnchor.center.z)
-            hoop?.position = SCNVector3(arPlaneAnchor.transform.columns.3.x, arPlaneAnchor.transform.columns.3.y, arPlaneAnchor.transform.columns.3.z)
+            hoop?.worldPosition = plane.worldPosition
+//            hoop?.position = SCNVector3(arPlaneAnchor.transform.columns.3.x, arPlaneAnchor.transform.columns.3.y, arPlaneAnchor.transform.columns.3.z)
+            
+            print("plane euler",plane.eulerAngles)
+            print("hoop euler",hoop!.eulerAngles)
+            
+            // angle ???
+//            hoop!.eulerAngles = plane.clone().eulerAngles
+//            hoop!.eulerAngles.y += Float.pi
+//            hoop!.eulerAngles.x -= Float.pi/2
+            
             print("planeLoc",plane.position)
             print("plane center",arPlaneAnchor.center)
             print("all information",arPlaneAnchor.transform.columns)
-            
+//            ball?.position = sceneView.pointOfView!.position
             if !changed {
                 changed = true
                 sceneView.scene.rootNode.addChildNode(hoop!)
@@ -183,7 +190,22 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         }
     }
     
+    @IBAction func pressDown(_ sender: UIButton) {
+//        ball?.position = SCNVector3(0,-0.03,-0.5)
+    }
     
+    @IBAction func fire(_ sender: UIButton) {
+        ball?.position = SCNVector3(0,-0.03,-0.15)
+        ball?.physicsBody = SCNPhysicsBody.dynamic()
+        ball?.physicsBody?.categoryBitMask = CollisionMask.ball.rawValue
+        ball?.physicsBody?.collisionBitMask = CollisionMask.board.rawValue | CollisionMask.ring.rawValue
+        ball?.physicsBody?.contactTestBitMask = CollisionMask.net.rawValue
+        
+        
+        // so what is fucking transform ...
+        let qq  = sceneView?.pointOfView?.transform
+        ball?.physicsBody?.applyForce(SCNVector3(-6*qq!.m31,-6*qq!.m32,-6*qq!.m33), asImpulse:true)
+    }
     
     func session(_ session: ARSession, didFailWithError error: Error) {
         // Present an error message to the user

@@ -27,6 +27,10 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="25"/>
                                 <state key="normal" title="Fire!!!"/>
+                                <connections>
+                                    <action selector="fire:" destination="BV1-FR-VrT" eventType="touchUpInside" id="fET-F2-fUo"/>
+                                    <action selector="pressDown:" destination="BV1-FR-VrT" eventType="touchDown" id="k1t-y6-Dbe"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
