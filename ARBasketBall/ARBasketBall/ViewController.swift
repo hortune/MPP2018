@@ -148,7 +148,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             print("Anchor",planeAnchor.transform.columns.3)
             planeNode.position = SCNVector3Make(planeAnchor.transform.columns.3.x, planeAnchor.transform.columns.3.y, planeAnchor.transform.columns.3.z);
             planeNode.transform = SCNMatrix4MakeRotation(-Float.pi / 2.0, 1.0, 0.0, 0.0);
-            hoop?.position = planeNode.position
+            hoop?.worldPosition = planeNode.position
+            let tangles = planeNode.eulerAngles
+            hoop?.eulerAngles = SCNVector3(tangles.x + Float.pi/2,tangles.y,tangles.z)
             print("planeLoc",planeNode.position)
             node.addChildNode(planeNode)
             sceneView.scene.rootNode.addChildNode(hoop!)
@@ -169,24 +171,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             // 而hoop的父節點是real world
             plane.position = SCNVector3(arPlaneAnchor.center.x, arPlaneAnchor.center.y, arPlaneAnchor.center.z)
             hoop?.worldPosition = plane.worldPosition
-//            hoop?.position = SCNVector3(arPlaneAnchor.transform.columns.3.x, arPlaneAnchor.transform.columns.3.y, arPlaneAnchor.transform.columns.3.z)
-            
-            print("plane euler",plane.eulerAngles)
-            print("hoop euler",hoop!.eulerAngles)
-            
-            // angle ???
-//            hoop!.eulerAngles = plane.clone().eulerAngles
-//            hoop!.eulerAngles.y += Float.pi
-//            hoop!.eulerAngles.x -= Float.pi/2
-            
-            print("planeLoc",plane.position)
-            print("plane center",arPlaneAnchor.center)
-            print("all information",arPlaneAnchor.transform.columns)
-//            ball?.position = sceneView.pointOfView!.position
-            if !changed {
-                changed = true
-                sceneView.scene.rootNode.addChildNode(hoop!)
-            }
+            let tangles = plane.eulerAngles
+            hoop?.eulerAngles = SCNVector3(tangles.x + Float.pi/2,tangles.y,tangles.z)
+
         }
     }
     
