@@ -25,9 +25,17 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     var ball: SCNNode?
     var anchors = [ARAnchor]()
     var isFalling = false
+    var historys = [Int]()
+    var start = false
+    var myUserDefaults :UserDefaults!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        myUserDefaults = UserDefaults.standard
+        if let hist = myUserDefaults.array(forKey: "historys") {
+            historys = hist as! [Int]
+        }
         initSceneView()
         loadNodeObject()
         self.title = "\(score)"
@@ -45,13 +53,16 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         sceneView.scene.physicsWorld.contactDelegate = self
     }
     func physicsWorld(_ world: SCNPhysicsWorld, didEnd contact: SCNPhysicsContact) {
-        if (contact.nodeA.name == "Net" || contact.nodeB.name == "Net") && !isFalling {
+        if (contact.nodeA.name == "Net" || contact.nodeB.name == "Net") && !isFalling && start{
             isFalling = true
             score += 1
+            
+            
+            ball?.physicsBody = SCNPhysicsBody.kinematic()
+            ball?.position = SCNVector3(0,0,1)
             DispatchQueue.main.async {
                 self.title = "\(self.score)"
             }
-            
         }
     }
     func loadNodeObject(){
@@ -79,6 +90,16 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         board?.physicsBody?.categoryBitMask = CollisionMask.board.rawValue
         
         
+//        let planeNode = SCNNode()
+//        let plane = SCNPlane(width: CGFloat(500000), height: CGFloat(500000))
+//        plane.firstMaterial?.diffuse.contents = UIColor.blue
+//        plane.firstMaterial?.lightingModel = .constant
+//        planeNode.geometry = plane
+//        planeNode.position = SCNVector3Make(0,0,0);
+//        planeNode.transform = SCNMatrix4MakeRotation(-Float.pi / 2.0, 1.0, 0.0, 0.0);
+//        planeNode.name = "9487"
+//        hoop!.addChildNode(planeNode)
+        
         let basketballScene = SCNScene(named: "model/basketball.scn")
         ball = basketballScene?.rootNode.childNode(withName: "Ball", recursively: true)
         ball?.scale = SCNVector3(0.001,0.001,0.001)
@@ -95,7 +116,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         
         // Create a session configuration
         let configuration = ARWorldTrackingConfiguration()
-        configuration.planeDetection = [.vertical] //.horizontal
+        configuration.planeDetection = [.vertical,.horizontal] //.horizontal
         // Run the view's session
         sceneView.session.run(configuration)
     }
@@ -112,7 +133,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         // Release any cached data, images, etc that aren't in use.
     }
 
-
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
         guard let planeAnchor = anchor as? ARPlaneAnchor else {
             return
@@ -121,16 +141,15 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
             changed = true
             let planeNode = SCNNode()
             let plane = SCNPlane(width: CGFloat(planeAnchor.extent.x), height: CGFloat(planeAnchor.extent.z))
-            plane.firstMaterial?.diffuse.contents = UIColor.white.withAlphaComponent(0.5)
+            plane.firstMaterial?.diffuse.contents = UIColor.white.withAlphaComponent(0)
             plane.firstMaterial?.lightingModel = .constant
             planeNode.geometry = plane
             print("Anchor",planeAnchor.transform.columns.3)
             planeNode.position = SCNVector3Make(planeAnchor.transform.columns.3.x, planeAnchor.transform.columns.3.y, planeAnchor.transform.columns.3.z);
             planeNode.transform = SCNMatrix4MakeRotation(-Float.pi / 2.0, 1.0, 0.0, 0.0);
-            hoop?.worldPosition = planeNode.position
+            hoop?.worldPosition = planeNode.worldPosition
             let tangles = planeNode.eulerAngles
             hoop?.eulerAngles = SCNVector3(tangles.x + Float.pi/2,tangles.y,tangles.z)
-            print("planeLoc",planeNode.position)
             node.addChildNode(planeNode)
             sceneView.scene.rootNode.addChildNode(hoop!)
         }
@@ -142,14 +161,15 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
             // first, we update the extent of the plane, because it might have changed
             planeGeometry.width = CGFloat(arPlaneAnchor.extent.x)
             planeGeometry.height = CGFloat(arPlaneAnchor.extent.z)
-
             // now we should update the position (remember the transform applied)
-            
+
             // I don't know why
             // 因為plane的父節點是anchor
             // 而hoop的父節點是real world
             plane.position = SCNVector3(arPlaneAnchor.center.x, arPlaneAnchor.center.y, arPlaneAnchor.center.z)
-            hoop?.worldPosition = plane.worldPosition
+            let qq = plane.worldPosition
+//            hoop?.worldPosition = SCNVector3(qq.x,qq.y,qq.z)
+            hoop?.position = SCNVector3(arPlaneAnchor.transform.columns.3.x, arPlaneAnchor.transform.columns.3.y, arPlaneAnchor.transform.columns.3.z);
             let tangles = plane.eulerAngles
             hoop?.eulerAngles = SCNVector3(tangles.x + Float.pi/2,tangles.y,tangles.z)
 
@@ -158,6 +178,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     
     @IBAction func pressDown(_ sender: UIButton) {
 //        ball?.position = SCNVector3(0,-0.03,-0.5)
+       
     }
     
     @IBAction func fire(_ sender: UIButton) {
@@ -168,14 +189,24 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         ball?.physicsBody?.contactTestBitMask = CollisionMask.net.rawValue
         
         // so what is fucking transform ...
+        start = true
         let qq  = sceneView?.pointOfView?.transform
+        if !isFalling{
+            if score != 0 {
+                historys.append(score)
+                myUserDefaults.set(historys, forKey: "historys")
+                myUserDefaults.synchronize()
+            }
+            score = 0
+            self.title = "\(self.score)"
+            print(historys)
+        }
         isFalling = false
         ball?.physicsBody?.applyForce(SCNVector3(-6*qq!.m31,-9*qq!.m32,-6*qq!.m33), asImpulse:true)
     }
     
     func session(_ session: ARSession, didFailWithError error: Error) {
         // Present an error message to the user
-        
     }
     
     func sessionWasInterrupted(_ session: ARSession) {
@@ -186,5 +217,14 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     func sessionInterruptionEnded(_ session: ARSession) {
         // Reset tracking and/or remove existing anchors if consistent tracking is required
         
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "showHistory" {
+            let historyViewController: HistoryViewController = segue.destination as! HistoryViewController
+            historyViewController.data = self.historys
+            print("historys in qaq ",self.historys)
+        }
+        // Get the new view controller using segue.destinationViewController.
+        // Pass the selected object to the new view controller.
     }
 }

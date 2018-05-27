@@ -39,7 +39,7 @@
                     <navigationItem key="navigationItem" title="score (TODO realtime)" id="cMQ-gl-0kS">
                         <barButtonItem key="rightBarButtonItem" title="Item" id="X7a-Bx-E77">
                             <connections>
-                                <segue destination="Wfa-MA-CYu" kind="show" id="MRH-2N-pYY"/>
+                                <segue destination="Wfa-MA-CYu" kind="show" identifier="showHistory" id="MRH-2N-pYY"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -66,7 +66,19 @@
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="SFa-Fa-9H3" id="fBR-6m-iBN">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="score" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P9U-8c-Fsn">
+                                            <rect key="frame" x="16" y="11" width="143" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="score" destination="P9U-8c-Fsn" id="A9o-PI-LgK"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -77,7 +89,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fcT-rr-DWU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2263" y="134"/>
+            <point key="canvasLocation" x="2261.5999999999999" y="133.5832083958021"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Eby-Zk-KBA">
