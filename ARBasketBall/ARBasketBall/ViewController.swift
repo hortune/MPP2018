@@ -15,7 +15,7 @@ enum CollisionMask: Int {
     case net = 4
     case ring = 8
 }
-class ViewController: UIViewController, ARSCNViewDelegate {
+class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
     var score = 0
@@ -24,6 +24,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     var hoop: SCNNode?
     var ball: SCNNode?
     var anchors = [ARAnchor]()
+    var isFalling = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         initSceneView()
@@ -39,8 +41,19 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.scene = SCNScene()
         
         sceneView.debugOptions = [ARSCNDebugOptions.showFeaturePoints,ARSCNDebugOptions.showWorldOrigin]
+        
+        sceneView.scene.physicsWorld.contactDelegate = self
     }
-    
+    func physicsWorld(_ world: SCNPhysicsWorld, didEnd contact: SCNPhysicsContact) {
+        if (contact.nodeA.name == "Net" || contact.nodeB.name == "Net") && !isFalling {
+            isFalling = true
+            score += 1
+            DispatchQueue.main.async {
+                self.title = "\(self.score)"
+            }
+            
+        }
+    }
     func loadNodeObject(){
         let tmpscene = SCNScene(named: "model/basketball_hoop.scn")!
         
@@ -99,40 +112,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Release any cached data, images, etc that aren't in use.
     }
 
-    // MARK: - ARSCNViewDelegate
-    
-
-    // Override to create and configure nodes for anchors added to the view's session.
-//    func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
-//        let node = SCNNode()
-//
-//        return node
-//    }
-//    func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-//        // 1
-//        guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
-//
-//        // 2
-//        let width = CGFloat(planeAnchor.extent.x)
-//        let height = CGFloat(planeAnchor.extent.z)
-//        let plane = SCNPlane(width: width, height: height)
-//
-//        // 3
-//        plane.materials.first?.diffuse.contents = UIColor.lightGray
-//
-//        // 4
-//        let planeNode = SCNNode(geometry: plane)
-//
-//        // 5
-//        let x = CGFloat(planeAnchor.center.x)
-//        let y = CGFloat(planeAnchor.center.y)
-//        let z = CGFloat(planeAnchor.center.z)
-//        planeNode.position = SCNVector3(x,y,z)
-//        planeNode.eulerAngles.x = -.pi / 2
-//
-//        // 6
-//        node.addChildNode(planeNode)
-//    } // 每次有新anchor 就會call這個
 
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
         guard let planeAnchor = anchor as? ARPlaneAnchor else {
@@ -188,10 +167,10 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         ball?.physicsBody?.collisionBitMask = CollisionMask.board.rawValue | CollisionMask.ring.rawValue
         ball?.physicsBody?.contactTestBitMask = CollisionMask.net.rawValue
         
-        
         // so what is fucking transform ...
         let qq  = sceneView?.pointOfView?.transform
-        ball?.physicsBody?.applyForce(SCNVector3(-6*qq!.m31,-6*qq!.m32,-6*qq!.m33), asImpulse:true)
+        isFalling = false
+        ball?.physicsBody?.applyForce(SCNVector3(-6*qq!.m31,-9*qq!.m32,-6*qq!.m33), asImpulse:true)
     }
     
     func session(_ session: ARSession, didFailWithError error: Error) {
