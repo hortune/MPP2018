@@ -166,9 +166,16 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             planeGeometry.height = CGFloat(arPlaneAnchor.extent.z)
 
             // now we should update the position (remember the transform applied)
-            plane.position = SCNVector3(arPlaneAnchor.transform.columns.3.x, arPlaneAnchor.transform.columns.3.y, arPlaneAnchor.transform.columns.3.z)
-            hoop?.position = plane.position
+            
+            // I don't know why
+            // 因為plane的父節點是anchor
+            // 而hoop的父節點是real world
+            plane.position = SCNVector3(arPlaneAnchor.center.x, arPlaneAnchor.center.y, arPlaneAnchor.center.z)
+            hoop?.position = SCNVector3(arPlaneAnchor.transform.columns.3.x, arPlaneAnchor.transform.columns.3.y, arPlaneAnchor.transform.columns.3.z)
             print("planeLoc",plane.position)
+            print("plane center",arPlaneAnchor.center)
+            print("all information",arPlaneAnchor.transform.columns)
+            
             if !changed {
                 changed = true
                 sceneView.scene.rootNode.addChildNode(hoop!)
@@ -176,58 +183,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         }
     }
     
-//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        print("1111")
-//        let touch = touches.first!
-//        let location = touch.location(in: sceneView)
-//        print(isPlaneSelected)
-//        if !isPlaneSelected {
-//            selectExistingPlane(location: location)
-//        } else {
-//            addNodeAtLocation(location: location)
-//        }
-//    }
-//
-//
-//
-//    func selectExistingPlane(location: CGPoint) {
-//        // Hit test result from intersecting with an existing plane anchor, taking into account the plane’s extent.
-//        let hitResults = sceneView.hitTest(location, types: .existingPlaneUsingExtent)
-//        print(hitResults)
-//        print(location)
-//        if hitResults.count > 0 {
-//            let result: ARHitTestResult = hitResults.first!
-//            if let planeAnchor = result.anchor as? ARPlaneAnchor {
-//                // keep track of selected anchor only
-//                anchors = [planeAnchor]
-//                // set isPlaneSelected to true
-//                isPlaneSelected = true
-//            }
-//        }
-//    }
-//
-//    func addNodeAtLocation(location: CGPoint) {
-//        guard anchors.count > 0 else {
-//            print("anchors are not created yet")
-//            return
-//        }
-//
-//        let hitResults = sceneView.hitTest(location, types: .existingPlaneUsingExtent)
-//        if hitResults.count > 0 {
-//            let result: ARHitTestResult = hitResults.first!
-//            let newLocation = SCNVector3Make(result.worldTransform.columns.3.x, result.worldTransform.columns.3.y/2, result.worldTransform.columns.3.z)
-////            let newhoop = hoop?.clone()
-//            let qq = anchors[0] as? ARPlaneAnchor
-//            print("origin location",location)
-//            print("new location",newLocation)
-//            print("anchor center",qq!.center)
-//            if !changed{
-//                changed = true
-//                hoop!.position = newLocation
-//                sceneView.scene.rootNode.addChildNode(hoop!)
-//            }
-//        }
-//    }
     
     
     func session(_ session: ARSession, didFailWithError error: Error) {
