@@ -14,6 +14,7 @@ enum CollisionMask: Int {
     case board = 2
     case net = 4
     case ring = 8
+    case floor = 16
 }
 class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDelegate {
 
@@ -29,6 +30,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     var start = false
     var myUserDefaults :UserDefaults!
     var counter = 20
+    var pnode : SCNNode?
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,11 +56,20 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         sceneView.scene.physicsWorld.contactDelegate = self
     }
     func physicsWorld(_ world: SCNPhysicsWorld, didEnd contact: SCNPhysicsContact) {
+        print(contact.nodeA.name,contact.nodeB.name)
         if (contact.nodeA.name == "Net" || contact.nodeB.name == "Net") && !isFalling && start{
             isFalling = true
             score += 1
-            
-            
+            ball?.physicsBody = SCNPhysicsBody.kinematic()
+            ball?.position = SCNVector3(0,0,1)
+            DispatchQueue.main.async {
+                self.title = "\(self.score)"
+            }
+        }
+        
+        if (contact.nodeA.name == "Floor" || contact.nodeB.name == "Floor") && start{
+            isFalling = false
+            score = 0
             ball?.physicsBody = SCNPhysicsBody.kinematic()
             ball?.position = SCNVector3(0,0,1)
             DispatchQueue.main.async {
@@ -88,23 +100,34 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         let board = hoop?.childNode(withName: "Board", recursively: true)
         board?.physicsBody? = SCNPhysicsBody.kinematic()
         board?.physicsBody?.categoryBitMask = CollisionMask.board.rawValue
+        // New
+        
+        
         
         
 //        let planeNode = SCNNode()
-//        let plane = SCNPlane(width: CGFloat(500000), height: CGFloat(500000))
+////        let plane = SCNPlane(width: CGFloat(500000), height: CGFloat(500000))
+//        let plane = SCNBox(width: CGFloat(50000000), height: CGFloat(0.01), length: CGFloat(50000000), chamferRadius: 0)
 //        plane.firstMaterial?.diffuse.contents = UIColor.blue
-//        plane.firstMaterial?.lightingModel = .constant
+////        plane.firstMaterial?.lightingModel = .constant
 //        planeNode.geometry = plane
-//        planeNode.position = SCNVector3Make(0,0,0);
-//        planeNode.transform = SCNMatrix4MakeRotation(-Float.pi / 2.0, 1.0, 0.0, 0.0);
-//        planeNode.name = "9487"
+//        planeNode.position = SCNVector3Make(0,-1,0);
+////        planeNode.transform = SCNMatrix4MakeRotation(-Float.pi / 2.0, 1.0, 0.0, 0.0);
+//        planeNode.name = "Floor"
+//        let planeShape = SCNPhysicsShape(geometry: plane,options: nil)
+//        planeNode.physicsBody? = SCNPhysicsBody(type: .kinematic, shape: planeShape)
+//        planeNode.physicsBody?.categoryBitMask = CollisionMask.floor.rawValue
+//        planeNode.physicsBody?.collisionBitMask = 0
+//        planeNode.physicsBody?.contactTestBitMask = CollisionMask.ball.rawValue
+//        // New
 //        hoop!.addChildNode(planeNode)
+        
         
         let basketballScene = SCNScene(named: "model/basketball.scn")
         ball = basketballScene?.rootNode.childNode(withName: "Ball", recursively: true)
         ball?.scale = SCNVector3(0.001,0.001,0.001)
         ball?.physicsBody?.type = .kinematic
-        ball?.position = SCNVector3(0,-0.03,-0.15)
+        ball?.position = SCNVector3(0,100,-0.15)
         
         sceneView.pointOfView?.addChildNode(ball!)
     }
@@ -132,7 +155,11 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         super.didReceiveMemoryWarning()
         // Release any cached data, images, etc that aren't in use.
     }
-
+    func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
+        print("ball position",ball?.worldPosition)
+        print("simd position",ball?.simdPosition)
+    }
+    
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
         guard let planeAnchor = anchor as? ARPlaneAnchor else {
             return
@@ -187,9 +214,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
         ball?.position = SCNVector3(0,-0.03,-0.15)
         ball?.physicsBody = SCNPhysicsBody.dynamic()
         ball?.physicsBody?.categoryBitMask = CollisionMask.ball.rawValue
+        // new
         ball?.physicsBody?.collisionBitMask = CollisionMask.board.rawValue | CollisionMask.ring.rawValue
-        ball?.physicsBody?.contactTestBitMask = CollisionMask.net.rawValue
-        
+        ball?.physicsBody?.contactTestBitMask = CollisionMask.net.rawValue | CollisionMask.floor.rawValue
+        // new
         // so what is fucking transform ...
         start = true
         let qq  = sceneView?.pointOfView?.transform
