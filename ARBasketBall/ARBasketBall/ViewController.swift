@@ -28,7 +28,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     var historys = [Int]()
     var start = false
     var myUserDefaults :UserDefaults!
-    
+    var counter = 20
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -156,23 +156,25 @@ class ViewController: UIViewController, ARSCNViewDelegate, SCNPhysicsContactDele
     }
 
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
-        if let arPlaneAnchor = anchor as? ARPlaneAnchor, let plane = node.childNodes.first, let planeGeometry = plane.geometry as? SCNPlane {
+        if counter > 0{
+            counter -= 0
+            if let arPlaneAnchor = anchor as? ARPlaneAnchor, let plane = node.childNodes.first, let planeGeometry = plane.geometry as? SCNPlane {
 
-            // first, we update the extent of the plane, because it might have changed
-            planeGeometry.width = CGFloat(arPlaneAnchor.extent.x)
-            planeGeometry.height = CGFloat(arPlaneAnchor.extent.z)
-            // now we should update the position (remember the transform applied)
+                // first, we update the extent of the plane, because it might have changed
+                planeGeometry.width = CGFloat(arPlaneAnchor.extent.x)
+                planeGeometry.height = CGFloat(arPlaneAnchor.extent.z)
+                // now we should update the position (remember the transform applied)
 
-            // I don't know why
-            // 因為plane的父節點是anchor
-            // 而hoop的父節點是real world
-            plane.position = SCNVector3(arPlaneAnchor.center.x, arPlaneAnchor.center.y, arPlaneAnchor.center.z)
-            let qq = plane.worldPosition
-//            hoop?.worldPosition = SCNVector3(qq.x,qq.y,qq.z)
-            hoop?.position = SCNVector3(arPlaneAnchor.transform.columns.3.x, arPlaneAnchor.transform.columns.3.y, arPlaneAnchor.transform.columns.3.z);
-            let tangles = plane.eulerAngles
-            hoop?.eulerAngles = SCNVector3(tangles.x + Float.pi/2,tangles.y,tangles.z)
+                // I don't know why
+                // 因為plane的父節點是anchor
+                // 而hoop的父節點是real world
+                plane.position = SCNVector3(arPlaneAnchor.center.x, arPlaneAnchor.center.y, arPlaneAnchor.center.z)
+    //            hoop?.worldPosition = SCNVector3(qq.x,qq.y,qq.z)
+                hoop?.position = SCNVector3(arPlaneAnchor.transform.columns.3.x, arPlaneAnchor.transform.columns.3.y, arPlaneAnchor.transform.columns.3.z);
+                let tangles = plane.eulerAngles
+                hoop?.eulerAngles = SCNVector3(tangles.x + Float.pi/2,tangles.y,tangles.z)
 
+            }
         }
     }
     
